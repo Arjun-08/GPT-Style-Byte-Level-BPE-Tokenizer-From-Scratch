@@ -1,8 +1,6 @@
 # GPT-Style Byte-Level BPE Tokenizer From Scratch
 
-A minimal implementation of a GPT-style **Byte Pair Encoding (BPE) tokenizer**, implemented entirely from scratch using Python's standard library.
-
-The purpose of this project is to understand the core algorithm behind modern subword tokenization by implementing the complete BPE workflow without relying on tokenizer libraries such as `tiktoken`, Hugging Face Tokenizers, or SentencePiece.
+A minimal implementation of a GPT-style **Byte Pair Encoding (BPE) tokenizer**, implemented entirely from scratch using Python's standard library. The purpose of this project is to understand the core algorithm behind modern subword tokenization by implementing the complete BPE workflow without relying on tokenizer libraries such as `tiktoken`, Hugging Face Tokenizers, or SentencePiece.
 
 The implementation demonstrates how raw text is converted into UTF-8 bytes, how frequent adjacent token pairs are identified, how new tokens are learned through iterative merging, and how the resulting vocabulary and merge rules are used for encoding and decoding.
 
@@ -10,9 +8,7 @@ The implementation demonstrates how raw text is converted into UTF-8 bytes, how 
 
 # Project Overview
 
-A language model does not directly process raw text.
-
-Instead, text is converted into a sequence of integer token IDs:
+A language model does not directly process raw text. Instead, text is converted into a sequence of integer token IDs:
 
 ```text
 Raw Text
@@ -46,26 +42,6 @@ The core idea behind BPE is:
 > Find the most frequent adjacent pair of tokens and replace that pair with a new token.
 
 Repeating this operation allows the tokenizer to learn increasingly larger and more reusable sequences.
-
----
-
-# Objective
-
-The main objectives of this project are:
-
-- Implement byte-level tokenization from scratch.
-- Understand why the initial vocabulary contains 256 byte tokens.
-- Implement adjacent-pair frequency counting.
-- Implement the BPE merge algorithm.
-- Build a vocabulary dynamically.
-- Store learned merge rules.
-- Encode previously unseen text using learned merges.
-- Decode token IDs back into the original text.
-- Verify lossless round-trip reconstruction.
-- Print intermediate states to make the learning process observable.
-- Save the learned tokenizer to disk.
-
-The implementation intentionally avoids high-level tokenizer libraries so that the underlying algorithm remains visible.
 
 ---
 
