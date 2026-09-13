@@ -4,10 +4,6 @@ A minimal implementation of a GPT-style **Byte Pair Encoding (BPE) tokenizer**, 
 
 The implementation demonstrates how raw text is converted into UTF-8 bytes, how frequent adjacent token pairs are identified, how new tokens are learned through iterative merging, and how the resulting vocabulary and merge rules are used for encoding and decoding.
 
----
-
-# Project Overview
-
 A language model does not directly process raw text. Instead, text is converted into a sequence of integer token IDs:
 
 ```text
@@ -191,9 +187,7 @@ Apply Learned Merge 3
 Final Token IDs
 ```
 
-The encoder does not learn new rules during inference.
-
-It only applies the merge rules learned during training.
+The encoder does not learn new rules during inference. It only applies the merge rules learned during training.
 
 ---
 
@@ -519,32 +513,25 @@ Their frequencies are:
 
 The implementation performs this operation using a Python dictionary.
 
-The mathematical frequency of pair `(a,b)` is:
-
-\[
-C(a,b)
-=
-\sum_{i=1}^{n-1}
-\mathbf{1}
-[t_i=a \land t_{i+1}=b]
-\]
+$$
+C(a,b) = \sum_{i=1}^{n-1} \mathbf{1}[t_i = a \land t_{i+1} = b]
+$$
 
 where:
 
-- \(t_i\) is the token at position \(i\)
-- \(C(a,b)\) is the frequency of pair `(a,b)`
-- \(\mathbf{1}\) is an indicator function
+- $t_i$ is the token at position $i$
+- $C(a,b)$ is the frequency of pair $(a,b)$
+- $1[\cdot]$ is an indicator function
 
 The indicator function is:
 
-\[
-\mathbf{1}[condition]
-=
+$$
+1[\text{condition}] =
 \begin{cases}
-1, & \text{if condition is true}\\
+1, & \text{if condition is true} \\
 0, & \text{otherwise}
 \end{cases}
-\]
+$$
 
 ---
 
@@ -554,12 +541,9 @@ After counting all adjacent pairs, BPE selects the pair with the highest frequen
 
 Mathematically:
 
-\[
-(a^*,b^*)
-=
-\underset{(a,b)}{\arg\max}
-\ C(a,b)
-\]
+$$
+(a*, b*) = \arg\max_{(a,b)} C(a,b)
+$$
 
 In words:
 
@@ -652,18 +636,16 @@ giving:
 
 More generally:
 
-\[
-B(z)
-=
-B(x)\Vert B(y)
-\]
+$$
+B(z) = B(x) \Vert B(y)
+$$
 
 where:
 
-- \(B(z)\) is the byte representation of the new token
-- \(B(x)\) is the byte representation of token \(x\)
-- \(B(y)\) is the byte representation of token \(y\)
-- \(\Vert\) represents concatenation
+- $B(z)$ is the byte representation of the new token
+- $B(x)$ is the byte representation of token $x$
+- $B(y)$ is the byte representation of token $y$
+- $\Vert$ represents concatenation
 
 This allows every learned token to retain a direct path back to the original bytes.
 
@@ -871,67 +853,47 @@ The merge table answers:
 
 Let the initial token sequence be:
 
-\[
+$$
 T^{(0)}
-\]
+$$
 
 where every token corresponds to a byte.
 
-At iteration \(k\), define the pair-frequency function:
+At iteration `k`, define the pair-frequency function:
 
-\[
-C_k(a,b)
-=
-\sum_i
-\mathbf{1}
-[t_i^{(k)}=a
-\land
-t_{i+1}^{(k)}=b]
-\]
+$$
+C_k(a,b) = \sum_i \mathbf{1}[t_i^{(k)} = a \land t_{i+1}^{(k)} = b]
+$$
 
 Select the most frequent pair:
 
-\[
-(a_k,b_k)
-=
-\arg\max_{(a,b)}
-C_k(a,b)
-\]
+$$
+(a_k, b_k) = \arg\max_{(a,b)} C_k(a,b)
+$$
 
 Assign a new token ID:
 
-\[
-v_k=256+k
-\]
+$$
+v_k = 256 + k
+$$
 
 Store the merge:
 
-\[
-(a_k,b_k)
-\rightarrow
-v_k
-\]
+$$
+(a_k, b_k) \rightarrow v_k
+$$
 
 Construct the new token's byte representation:
 
-\[
-B(v_k)
-=
-B(a_k)\Vert B(b_k)
-\]
+$$
+B(v_k) = B(a_k) \Vert B(b_k)
+$$
 
 Then replace every occurrence of the selected pair:
 
-\[
-T^{(k+1)}
-=
-Merge
-\left(
-T^{(k)},
-(a_k,b_k),
-v_k
-\right)
-\]
+$$
+T^{(k+1)} = \mathrm{Merge}\left(T^{(k)}, (a_k,b_k), v_k\right)
+$$
 
 The process continues until the desired vocabulary size is reached.
 
@@ -1076,9 +1038,9 @@ Each vocabulary entry already contains its complete underlying byte sequence.
 
 A correct tokenizer should satisfy:
 
-\[
-Decode(Encode(x))=x
-\]
+$$
+Decode(Encode(x)) = x
+$$
 
 for valid input text \(x\).
 
@@ -1244,9 +1206,7 @@ The learned tokens included:
 | 268 | `hello hello hello hello world ` |
 | 269 | `hello hello hello hello world hello ` |
 
-These tokens were learned entirely from the supplied training corpus.
-
-One important observation is that the tokenizer does not restrict tokens to individual words.
+These tokens were learned entirely from the supplied training corpus. One important observation is that the tokenizer does not restrict tokens to individual words.
 
 It learned:
 
@@ -1635,9 +1595,7 @@ Special Token Handling
 Token IDs
 ```
 
-Production implementations also use optimized algorithms and data structures for large-scale training and inference.
-
-This project intentionally focuses on the underlying BPE mechanism so that every major operation can be inspected directly.
+Production implementations also use optimized algorithms and data structures for large-scale training and inference. This project intentionally focuses on the underlying BPE mechanism so that every major operation can be inspected directly.
 
 ---
 
@@ -1667,287 +1625,3 @@ A production tokenizer would require significantly more efficient implementation
 - deterministic behavior across all edge cases
 
 The current implementation also intentionally omits several tokenizer-specific components used by production GPT-family tokenizers.
-
----
-
-# Implementation Philosophy
-
-The project intentionally avoids abstraction-heavy libraries.
-
-The objective is to expose the algorithm itself.
-
-The implementation uses basic Python functionality for:
-
-```text
-UTF-8 encoding
-Dictionary-based counting
-List manipulation
-Byte concatenation
-File I/O
-```
-
-The training process prints intermediate information including:
-
-```text
-Pair frequencies
-Selected pair
-Pair frequency
-New token ID
-Underlying bytes
-Decoded representation
-Sequence length before and after merging
-Current token sequence
-```
-
-This makes it possible to observe exactly how the tokenizer learns its vocabulary.
-
----
-
-# Example End-to-End Flow
-
-Consider:
-
-```text
-hello world
-```
-
-The complete pipeline is:
-
-```text
-                     "hello world"
-                           |
-                           v
-                     UTF-8 Encoding
-                           |
-                           v
-        [104,101,108,108,111,32,119,111,114,108,100]
-                           |
-                           v
-                   Initial Byte Tokens
-                           |
-                           v
-                    Apply BPE Rules
-                           |
-                           v
-                       [260,265]
-                           |
-                           v
-                        Decode
-                           |
-                           v
-                     "hello world"
-```
-
-The learned vocabulary contains:
-
-```text
-260 -> "hello "
-265 -> "world"
-```
-
-Therefore the input can be represented using only two learned tokens.
-
----
-
-# Key Takeaways
-
-The most important concepts demonstrated by this implementation are:
-
-### Byte-Level Initialization
-
-The tokenizer starts with:
-
-```text
-256 primitive byte tokens
-```
-
-corresponding to:
-
-```text
-0–255
-```
-
-### Frequency-Based Learning
-
-At each iteration, BPE finds:
-
-\[
-(a,b)
-=
-\arg\max C(a,b)
-\]
-
-the most frequent adjacent token pair.
-
-### Vocabulary Expansion
-
-A new token is created:
-
-```text
-256
-257
-258
-...
-```
-
-as new pairs are learned.
-
-### Hierarchical Representation
-
-Tokens are progressively constructed:
-
-```text
-h + e
-  -> he
-
-he + l
-   -> hel
-
-hel + l
-    -> hell
-
-hell + o
-     -> hello
-```
-
-### Merge Rules
-
-The tokenizer stores:
-
-```text
-pair -> token ID
-```
-
-so the learned behavior can be reproduced during encoding.
-
-### Lossless Reconstruction
-
-A correctly functioning tokenizer should satisfy:
-
-\[
-Decode(Encode(x))=x
-\]
-
-for valid input text.
-
-### Tokens Are Learned Units
-
-Tokens do not necessarily correspond to complete words.
-
-They can represent arbitrary recurring byte sequences.
-
----
-
-# Repository Structure
-
-A minimal repository can be organized as:
-
-```text
-gpt-bpe-tokenizer/
-|
-├── bpe_tokenizer.py
-├── bpe_tokenizer.txt
-└── README.md
-```
-
-### `bpe_tokenizer.py`
-
-Contains the complete implementation:
-
-- byte conversion
-- vocabulary initialization
-- pair counting
-- BPE training
-- merge operations
-- encoding
-- decoding
-- tokenizer saving
-- tokenizer loading
-
-### `bpe_tokenizer.txt`
-
-Contains the learned vocabulary and merge rules.
-
-### `README.md`
-
-Contains the project explanation, architecture, mathematical formulation, implementation details, and experimental results.
-
----
-
-# Final Insight
-
-The core BPE algorithm can be reduced to a simple iterative process:
-
-```text
-Start with primitive byte tokens
-            |
-            v
-Count adjacent pairs
-            |
-            v
-Find the most frequent pair
-            |
-            v
-Create a new token
-            |
-            v
-Store the merge rule
-            |
-            v
-Replace the pair
-            |
-            v
-Repeat
-```
-
-Mathematically:
-
-\[
-(a_k,b_k)
-=
-\arg\max_{(a,b)} C_k(a,b)
-\]
-
-followed by:
-
-\[
-(a_k,b_k)\rightarrow v_k
-\]
-
-with:
-
-\[
-B(v_k)
-=
-B(a_k)\Vert B(b_k)
-\]
-
-Repeated application transforms primitive byte-level representations into a learned vocabulary of reusable token sequences.
-
-The experiment demonstrates this progression directly:
-
-```text
-he
-  ↓
-hel
-  ↓
-hell
-  ↓
-hello
-```
-
-and eventually:
-
-```text
-hello world
-     ↓
-[260,265]
-```
-
-with successful reconstruction back to:
-
-```text
-hello world
-```
-
-The project therefore provides a transparent implementation of the core idea behind BPE-based tokenization and serves as a foundation for understanding how tokenizers interface with modern language models.
